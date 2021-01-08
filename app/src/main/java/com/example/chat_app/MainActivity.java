@@ -38,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private final int[] PERMISSION_CODES = {1};
 
     public static TextView displayMessages;
-    EditText enterMessages;
-    Button sendMessage;
+    public static EditText enterMessages;
+    public static Button sendMessage;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -51,7 +51,15 @@ public class MainActivity extends AppCompatActivity {
         enterMessages = (EditText) findViewById(R.id.textbox);
         sendMessage = (Button) findViewById(R.id.sendButton);
 
-        MessagingHelper.testings();
+        MessagingHelper.getMessagesOnDB();
+
+        sendMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MessagingHelper.sendMessage();
+                enterMessages.setText("");
+            }
+        });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Create channel to show notifications.
