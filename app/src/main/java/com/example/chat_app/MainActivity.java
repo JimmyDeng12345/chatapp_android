@@ -20,15 +20,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,15 +37,25 @@ public class MainActivity extends AppCompatActivity {
     private final String[] PERMISSIONS = {Manifest.permission.CAMERA};
     private final int[] PERMISSION_CODES = {1};
 
+    public static TextView displayMessages;
+    EditText enterMessages;
+    Button sendMessage;
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        displayMessages = (TextView) findViewById(R.id.textdisplay);
+        enterMessages = (EditText) findViewById(R.id.textbox);
+        sendMessage = (Button) findViewById(R.id.sendButton);
+
+        MessagingHelper.testings();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Create channel to show notifications.
-            String channelId  = "ID";
+            String channelId = "ID";
             String channelName = "NAME";
             NotificationManager notificationManager =
                     getSystemService(NotificationManager.class);
@@ -70,53 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Key: " + key + " Value: " + value);
             }
         }
-        // [END handle_data_extras]
-
-        Button button1 = findViewById(R.id.button);
-
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "Subscribing to weather topic");
-                // [START subscribe_topics]
-                FirebaseMessaging.getInstance().subscribeToTopic("weather").addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        String msg = "Completed"; //getString(R.string.msg_subscribed);
-                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
-
-        Button button2 = findViewById(R.id.button2);
-
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
-                            return;
-                        }
-
-                        // Get new FCM registration token
-                        String token = task.getResult();
-
-                        // Log and toast
-                        String msg = "tokenstring"; //getString(R.string.msg_token_fmt, token);
-                        Log.d(TAG, msg);
-                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
-
     }
-
 
     private final int CAMERA_CODE = 1;
     @Override
@@ -132,9 +94,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-
-
 
     private void userSelect() throws Exception{
         final String[] userOptions = {"Use Camera", "Choose From Phone", "Cancel"};
@@ -176,8 +135,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkPermissions () {
         for (int i = 0; i < PERMISSIONS.length; i++) {
@@ -186,7 +143,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
 
 }
