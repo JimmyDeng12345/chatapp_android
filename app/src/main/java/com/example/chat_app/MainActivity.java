@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
             TextView bottomText = findViewById(R.id.textView4);
             Button signIn = findViewById(R.id.button4);
 
+
             create.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -110,8 +111,8 @@ public class MainActivity extends AppCompatActivity {
                     String userEmail = email.getText().toString();
                     String userPassword = password.getText().toString();
                     if (createOn) {
-
                         mAuth.createUserWithEmailAndPassword(userEmail, userPassword);
+
                     }
                     startSignIn(userEmail, userPassword);
                 }
