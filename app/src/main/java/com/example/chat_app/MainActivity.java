@@ -1,33 +1,45 @@
-        package com.example.chat_app;
+package com.example.chat_app;
 
-        import android.Manifest;
-        import android.app.Activity;
-        import android.app.NotificationChannel;
-        import android.app.NotificationManager;
-        import android.content.ContextWrapper;
-        import android.content.DialogInterface;
-        import android.content.Intent;
-        import android.content.pm.PackageManager;
-        import android.graphics.Bitmap;
-        import android.os.Build;
-        import android.os.Bundle;
-        import android.util.Log;
-        import android.view.View;
-        import android.widget.Button;
-        import android.widget.EditText;
-        import android.widget.TextView;
-        import android.widget.Toast;
+import android.Manifest;
+import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.ContextWrapper;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Icon;
+import android.os.Build;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-        import androidx.annotation.NonNull;
-        import androidx.annotation.RequiresApi;
-        import androidx.appcompat.app.AlertDialog;
-        import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
-        import com.google.android.gms.tasks.OnCompleteListener;
-        import com.google.android.gms.tasks.Task;
-        import com.google.firebase.auth.AuthResult;
-        import com.google.firebase.auth.FirebaseAuth;
-        import com.google.firebase.auth.FirebaseUser;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,11 +50,18 @@ public class MainActivity extends AppCompatActivity {
     private final String[] PERMISSIONS = {Manifest.permission.CAMERA};
     private final int[] PERMISSION_CODES = {1};
     public static boolean createOn = true;
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private static FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+    private static FirebaseFirestore fdb;
 
     public static TextView displayMessages;
     public static EditText enterMessages;
     public static Button sendMessage;
+    public static ImageView sender_photo;
+
+    public static ArrayList<Message> list;
+
+    private ListView mListView;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -50,17 +69,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        displayMessages = (TextView) findViewById(R.id.textdisplay);
+        //displayMessages = (TextView) findViewById(R.id.textdisplay);
         enterMessages = (EditText) findViewById(R.id.textbox);
         sendMessage = (Button) findViewById(R.id.sendButton);
+        mListView = (ListView) findViewById(R.id.textdisplay);
+        list = new ArrayList<>();
 
-        MessagingHelper.getMessagesOnDB();
+        getMessagesOnDB();
+
+        CustomListAdapter adapter = new CustomListAdapter(this, R.layout.message_display, list);
+        mListView.setAdapter(adapter);
+
 
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MessagingHelper.sendMessage();
                 enterMessages.setText("");
+                sendMessage();
+
             }
         });
 
@@ -74,15 +100,6 @@ public class MainActivity extends AppCompatActivity {
                     channelName, NotificationManager.IMPORTANCE_LOW));
         }
 
-        // If a notification message is tapped, any data accompanying the notification
-        // message is available in the intent extras. In this sample the launcher
-        // intent is fired when the notification is tapped, so any accompanying data would
-        // be handled here. If you want a different intent fired, set the click_action
-        // field of the notification message to the desired intent. The launcher intent
-        // is used when no click_action is specified.
-        //
-        // Handle possible data accompanying notification message.
-        // [START handle_data_extras]
         if (getIntent().getExtras() != null) {
             for (String key : getIntent().getExtras().keySet()) {
                 Object value = getIntent().getExtras().get(key);
@@ -92,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
         //FirebaseAuth.getInstance().signOut();
         FirebaseUser currUser = mAuth.getCurrentUser();
+
         //Toast.makeText(this, currUser.getEmail(), Toast.LENGTH_LONG).show();
         if (currUser == null) {
             setContentView(R.layout.create_account);
@@ -102,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
             Button create = findViewById(R.id.create);
             TextView bottomText = findViewById(R.id.textView4);
             Button signIn = findViewById(R.id.button4);
-
 
             create.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -137,6 +154,13 @@ public class MainActivity extends AppCompatActivity {
             });
 
         }
+    }
+
+    public void updateDisplay() {
+
+        CustomListAdapter adapter = new CustomListAdapter(this, R.layout.message_display, list);
+        mListView.setAdapter(adapter);
+
     }
 
     public static boolean changeState() {
@@ -212,6 +236,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public static String getUID() {
+        return mAuth.getCurrentUser().getUid();
+    }
+
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
@@ -229,6 +258,58 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(PERMISSIONS, PERMISSION_CODES[i]);
             }
         }
+    }
+
+    public void getMessagesOnDB() {
+
+        fdb = FirebaseFirestore.getInstance();
+
+        //MainActivity.displayMessages.append("Running" + '\n');
+        fdb.collection("messages")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                        if (task.isSuccessful()) {
+                            if (task.getResult() != null) {
+                                List<Message> readData = task.getResult().toObjects(Message.class);
+
+                                Object [] data = readData.toArray();
+                                Arrays.sort(data);
+
+                                for (int i = 0; i < data.length; i++) {
+                                    Object o = data[i];
+                                    processMessages((Message) o);
+                                }
+
+
+
+                            }
+                        } else {
+                            Log.w(TAG, "Goofed");
+                        }
+                    }
+                });
+
+
+    }
+
+    public void processMessages(Message m) {
+
+        list.add(m);
+        updateDisplay();
+
+    }
+
+    public void sendMessage() {
+
+        String text = MainActivity.enterMessages.getText().toString();
+
+        fdb.collection("messages").add(new Message(new Date(), "blank", text, MainActivity.getUID()));
+        //MainActivity.displayMessages.setText("");
+        getMessagesOnDB();
+
     }
 
 

@@ -5,15 +5,6 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp" >
 
-    <TextView
-        android:id="@+id/textdisplay"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:text="Default Text Here"
-        />
-
     <EditText
         android:id="@+id/textbox"
         android:layout_width="230dp"
@@ -38,4 +29,21 @@
         android:layout_toEndOf="@+id/textbox"
         android:layout_toRightOf="@+id/textbox"
         android:text="Send" />
+
+    <ListView
+        android:id="@+id/textdisplay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_above="@+id/sendButton"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp" />
+
 </RelativeLayout>
