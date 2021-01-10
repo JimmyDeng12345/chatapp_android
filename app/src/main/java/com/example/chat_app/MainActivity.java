@@ -75,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
         mListView = (ListView) findViewById(R.id.textdisplay);
         list = new ArrayList<>();
 
+        fdb = FirebaseFirestore.getInstance();
+
         getMessagesOnDB();
 
         CustomListAdapter adapter = new CustomListAdapter(this, R.layout.message_display, list);
@@ -84,9 +86,7 @@ public class MainActivity extends AppCompatActivity {
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                enterMessages.setText("");
                 sendMessage();
-
             }
         });
 
@@ -262,8 +262,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void getMessagesOnDB() {
 
-        fdb = FirebaseFirestore.getInstance();
-
         //MainActivity.displayMessages.append("Running" + '\n');
         fdb.collection("messages")
                 .get()
@@ -304,7 +302,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendMessage() {
 
-        String text = MainActivity.enterMessages.getText().toString();
+        String text = enterMessages.getText().toString();
+        enterMessages.setText("");
 
         fdb.collection("messages").add(new Message(new Date(), "blank", text, MainActivity.getUID()));
         //MainActivity.displayMessages.setText("");
