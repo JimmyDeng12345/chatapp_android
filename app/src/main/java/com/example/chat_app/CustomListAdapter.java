@@ -1,6 +1,7 @@
 package com.example.chat_app;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ public class CustomListAdapter extends ArrayAdapter<Message> {
     private static class ViewHolder {
         TextView message;
         ImageView image;
+        ImageView my_image;
     }
 
     /**
@@ -50,6 +52,7 @@ public class CustomListAdapter extends ArrayAdapter<Message> {
         //get the Card information
         String title = getItem(position).text;
         String imgUrl = getItem(position).photoURL;
+        String uid = getItem(position).uid;
 
         //create the view result for showing the animation
         final View result;
@@ -64,6 +67,7 @@ public class CustomListAdapter extends ArrayAdapter<Message> {
             holder = new ViewHolder();
             holder.message = (TextView) convertView.findViewById(R.id.message);
             holder.image = (ImageView) convertView.findViewById(R.id.sender_photo);
+            holder.my_image = (ImageView) convertView.findViewById(R.id.my_photo);
 
             result = convertView;
 
@@ -82,7 +86,19 @@ public class CustomListAdapter extends ArrayAdapter<Message> {
 
         holder.message.setText(title);
 
-        Picasso.get().load(imgUrl).into(holder.image);
+        if (uid.compareTo(MainActivity.getUID()) == 0) {
+            Picasso.get().load(imgUrl).into(holder.my_image);
+            holder.message.setGravity(Gravity.RIGHT);
+            holder.my_image.setVisibility(View.VISIBLE);
+            holder.image.setVisibility(View.INVISIBLE);
+        } else {
+            Picasso.get().load(imgUrl).into(holder.image);
+            holder.message.setGravity(Gravity.LEFT);
+            holder.image.setVisibility(View.VISIBLE);
+            holder.my_image.setVisibility(View.INVISIBLE);
+        }
+
+
 
 //        //create the imageloader object
 //        ImageLoader imageLoader = ImageLoader.getInstance();

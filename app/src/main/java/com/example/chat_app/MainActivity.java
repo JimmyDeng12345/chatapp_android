@@ -8,12 +8,14 @@ import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -74,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
         sendMessage = (Button) findViewById(R.id.sendButton);
         mListView = (ListView) findViewById(R.id.textdisplay);
         list = new ArrayList<>();
+
+        mListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        mListView.setStackFromBottom(true);
 
         fdb = FirebaseFirestore.getInstance();
 
@@ -159,7 +164,18 @@ public class MainActivity extends AppCompatActivity {
     public void updateDisplay() {
 
         CustomListAdapter adapter = new CustomListAdapter(this, R.layout.message_display, list);
+
+        mListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         mListView.setAdapter(adapter);
+
+        adapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                mListView.setSelection(adapter.getCount() - 1);
+            }
+        });
+
 
     }
 
@@ -305,7 +321,9 @@ public class MainActivity extends AppCompatActivity {
         String text = enterMessages.getText().toString();
         enterMessages.setText("");
 
-        fdb.collection("messages").add(new Message(new Date(), "blank", text, MainActivity.getUID()));
+        String url = "https://www.borgenmagazine.com/wp-content/uploads/2013/09/george-bush-eating-corn.jpg";
+
+        fdb.collection("messages").add(new Message(new Date(), url, text, MainActivity.getUID()));
         //MainActivity.displayMessages.setText("");
         getMessagesOnDB();
 
