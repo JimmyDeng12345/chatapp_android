@@ -99,22 +99,6 @@ public class CustomListAdapter extends ArrayAdapter<Message> {
         }
 
 
-
-//        //create the imageloader object
-//        ImageLoader imageLoader = ImageLoader.getInstance();
-//
-//        int defaultImage = mContext.getResources().getIdentifier("@drawable/image_failed",null,mContext.getPackageName());
-//
-//        //create display options
-//        DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory(true)
-//                .cacheOnDisc(true).resetViewBeforeLoading(true)
-//                .showImageForEmptyUri(defaultImage)
-//                .showImageOnFail(defaultImage)
-//                .showImageOnLoading(defaultImage).build();
-//
-//        //download and display image from url
-//        imageLoader.displayImage(imgUrl, holder.image, options);
-
         return convertView;
     }
 

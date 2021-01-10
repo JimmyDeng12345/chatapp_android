@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,13 +34,21 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static android.content.ContentValues.TAG;
 
@@ -82,18 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
         fdb = FirebaseFirestore.getInstance();
 
-        getMessagesOnDB();
 
-        CustomListAdapter adapter = new CustomListAdapter(this, R.layout.message_display, list);
-        mListView.setAdapter(adapter);
-
-
-        sendMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendMessage();
-            }
-        });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Create channel to show notifications.
@@ -159,6 +157,37 @@ public class MainActivity extends AppCompatActivity {
             });
 
         }
+        //getMessagesOnDB();
+
+        CustomListAdapter adapter = new CustomListAdapter(this, R.layout.message_display, list);
+        mListView.setAdapter(adapter);
+
+
+        sendMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage();
+            }
+        });
+
+        fdb.collection("messages").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                if (error != null) {
+                    Log.w(TAG, "Listen failed.", error);
+                    return;
+                }
+
+                list.clear();
+
+                for (QueryDocumentSnapshot doc : value) {
+                    list.add(doc.toObject(Message.class));
+                }
+                Collections.sort(list, new MessageComparator());
+                updateDisplay();
+            }
+        });
     }
 
     public void updateDisplay() {
@@ -167,15 +196,6 @@ public class MainActivity extends AppCompatActivity {
 
         mListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         mListView.setAdapter(adapter);
-
-        adapter.registerDataSetObserver(new DataSetObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                mListView.setSelection(adapter.getCount() - 1);
-            }
-        });
-
 
     }
 
@@ -305,8 +325,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-
-
     }
 
     public void processMessages(Message m) {
@@ -324,8 +342,6 @@ public class MainActivity extends AppCompatActivity {
         String url = "https://www.borgenmagazine.com/wp-content/uploads/2013/09/george-bush-eating-corn.jpg";
 
         fdb.collection("messages").add(new Message(new Date(), url, text, MainActivity.getUID()));
-        //MainActivity.displayMessages.setText("");
-        getMessagesOnDB();
 
     }
 
