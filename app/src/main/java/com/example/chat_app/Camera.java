@@ -11,6 +11,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -20,7 +27,7 @@ public class Camera extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_page);
+        //setContentView(R.layout.content_main);
         try {
             userSelect();
         } catch (Exception e) {
@@ -34,6 +41,8 @@ public class Camera extends AppCompatActivity {
     private final String[] PERMISSIONS = {Manifest.permission.CAMERA};
     private final int[] PERMISSION_CODES = {1};
     private final int CAMERA_CODE = 1;
+    public static Bitmap myProfilePic = null;
+    public static boolean hasImage = false;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -91,10 +100,37 @@ public class Camera extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
+            hasImage = true;
             Bitmap photo = (Bitmap) data.getExtras().get("data");
+            myProfilePic = photo;
             ContextWrapper cw = new ContextWrapper(getApplicationContext());
-            finish();
-            startActivity(new Intent(this, MainPage.class));
+
         }
+        finish();
     }
+
+    public static Bitmap getProfilePic() {
+        return myProfilePic;
+    }
+
+    public static Bitmap getCircularImage(Bitmap bitmap) {
+
+        int squareWidth = Math.min(bitmap.getWidth(), bitmap.getHeight());
+        Bitmap destination = Bitmap.createBitmap(squareWidth, squareWidth, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(destination);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        Rect rect = new Rect(0, 0, squareWidth, squareWidth);
+        RectF rectF = new RectF(rect);
+        canvas.drawOval(rectF, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        float left = (squareWidth - bitmap.getWidth()) / 2;
+        float top = (squareWidth - bitmap.getHeight()) / 2;
+        canvas.drawBitmap(bitmap, left, top, paint);
+        bitmap.recycle();
+        return destination;
+
+    }
+
+
 }

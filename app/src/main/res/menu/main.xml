@@ -11,4 +11,9 @@
         android:orderInCategory="99"
         android:title="@string/action_sign_out"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/dark_mode"
+        android:orderInCategory="98"
+        android:title="@string/action_dark_mode"
+        app:showAsAction="never" />
 </menu>

@@ -6,6 +6,8 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="action_sign_out">Sign Out</string>
+    <string name="profile">My Profile</string>
+    <string name="action_dark_mode">Toggle Dark/Light Mode</string>
 
 
     <string name="app_name">Chat_App</string>

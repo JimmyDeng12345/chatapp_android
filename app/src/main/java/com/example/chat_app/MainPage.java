@@ -51,7 +51,7 @@ public class MainPage extends AppCompatActivity {
     private static EditText enterMessages;
     private static Button sendMessage;
     private static ImageView sender_photo;
-    private AppBarConfiguration mAppBarConfiguration;
+
 
 
     public static ArrayList<Message> list;
@@ -62,17 +62,7 @@ public class MainPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
 
-
-
-        // Builds Top Bar Navigation
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow).setDrawerLayout(drawer).build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
-
-
+        MainActivity.makeNavBar(this);
 
         enterMessages = (EditText) findViewById(R.id.textbox);
         sendMessage = (Button) findViewById(R.id.sendButton);
@@ -194,15 +184,9 @@ public class MainPage extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.sign_out:
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(this, SignIn.class));
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        MainActivity.checkMenu(item);
+        return super.onOptionsItemSelected(item);
+
     }
 
 }
