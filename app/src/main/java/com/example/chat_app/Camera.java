@@ -20,7 +20,7 @@ public class Camera extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_page);
         try {
             userSelect();
         } catch (Exception e) {
@@ -94,6 +94,7 @@ public class Camera extends AppCompatActivity {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             ContextWrapper cw = new ContextWrapper(getApplicationContext());
             finish();
+            startActivity(new Intent(this, MainPage.class));
         }
     }
 }

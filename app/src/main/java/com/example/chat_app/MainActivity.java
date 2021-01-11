@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,8 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    // List of permissions needed for the program, add new ones as needed
-    //See checkPermissions method below
+    private AppBarConfiguration mAppBarConfiguration;
 
 
 
@@ -50,8 +50,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        startActivity(new Intent(this, SignIn.class));
         setContentView(R.layout.activity_main_page);
+
+
+        startActivity(new Intent(this, SignIn.class));
+
         startActivity(new Intent(this, MainPage.class));
 
 
@@ -64,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
             return s;
         }
     }
+
+
 
 
 

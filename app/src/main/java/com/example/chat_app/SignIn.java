@@ -32,7 +32,7 @@ public class SignIn extends AppCompatActivity {
     public static boolean createOn = true;
 
     private GoogleSignInClient mGoogleSignInClient;
-    public FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    public static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final int GOOGLE_SIGN_IN = 150;
 
     @Override
@@ -169,5 +169,9 @@ public class SignIn extends AppCompatActivity {
             }
             System.out.println("GoodDay Line 304");
         }
+    }
+
+    public static void signOut() {
+        mAuth.signOut();
     }
 }

@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.Button;
@@ -41,6 +42,8 @@ import java.util.List;
 
 import static android.content.ContentValues.TAG;
 
+
+
 public class MainPage extends AppCompatActivity {
     private static FirebaseFirestore fdb;
 
@@ -49,6 +52,7 @@ public class MainPage extends AppCompatActivity {
     private static Button sendMessage;
     private static ImageView sender_photo;
     private AppBarConfiguration mAppBarConfiguration;
+
 
     public static ArrayList<Message> list;
     private ListView mListView;
@@ -59,6 +63,7 @@ public class MainPage extends AppCompatActivity {
         setContentView(R.layout.activity_main_page);
 
 
+
         // Builds Top Bar Navigation
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -66,6 +71,7 @@ public class MainPage extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
 
 
         enterMessages = (EditText) findViewById(R.id.textbox);
@@ -178,10 +184,25 @@ public class MainPage extends AppCompatActivity {
 
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.sign_out:
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(this, SignIn.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }
