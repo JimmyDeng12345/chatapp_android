@@ -38,4 +38,18 @@
         android:layout_toEndOf="@+id/textbox"
         android:layout_toRightOf="@+id/textbox"
         android:text="Send" />
+
+
+    <include
+        layout="@layout/side_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <include
+        layout="@layout/app_bar_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
 </RelativeLayout>
+
