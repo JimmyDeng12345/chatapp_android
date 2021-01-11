@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -64,6 +66,7 @@ public class MainPage extends AppCompatActivity {
         CustomListAdapter adapter = new CustomListAdapter(this, R.layout.message_display, list);
         mListView.setAdapter(adapter);
 
+        Context con = this;
 
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,7 +74,7 @@ public class MainPage extends AppCompatActivity {
 
                 if (enterMessages.getText().toString().equals("Sign Out")) {
                     FirebaseAuth.getInstance().signOut();
-                    setContentView(R.layout.create_account);
+                    startActivity(new Intent(con, MainActivity.class));
                 } else {
                     sendMessage();
                 }

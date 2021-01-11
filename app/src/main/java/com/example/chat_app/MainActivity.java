@@ -46,13 +46,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        FirebaseUser currUser = mAuth.getCurrentUser();
+
+        if (currUser == null) {
+            setContentView(R.layout.create_account);
+        } else {
+            setContentView(R.layout.activity_main_page);
+        }
         //displayMessages = (TextView) findViewById(R.id.textdisplay);
 
 
         //FirebaseAuth.getInstance().signOut();
-        FirebaseUser currUser = mAuth.getCurrentUser();
+
 
         //Toast.makeText(this, currUser.getEmail(), Toast.LENGTH_LONG).show();
         if (currUser == null) {
@@ -98,8 +104,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+        } else {
+            startActivity(new Intent(this, MainPage.class));
         }
-
 
     }
 
