@@ -47,10 +47,10 @@ import static android.content.ContentValues.TAG;
 public class MainPage extends AppCompatActivity {
     private static FirebaseFirestore fdb;
 
-    private static TextView displayMessages;
+    //private static TextView displayMessages;
     private static EditText enterMessages;
     private static Button sendMessage;
-    private static ImageView sender_photo;
+    //private static ImageView sender_photo;
     private AppBarConfiguration mAppBarConfiguration;
 
 
@@ -62,6 +62,7 @@ public class MainPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
 
+        /*
 
 
         // Builds Top Bar Navigation
@@ -73,7 +74,7 @@ public class MainPage extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
 
-
+*/
         enterMessages = (EditText) findViewById(R.id.textbox);
         sendMessage = (Button) findViewById(R.id.sendButton);
         mListView = (ListView) findViewById(R.id.textdisplay);
