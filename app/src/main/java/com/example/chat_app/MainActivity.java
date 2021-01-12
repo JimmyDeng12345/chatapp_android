@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -40,7 +41,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-
+    private static boolean isDark = false;
     private AppBarConfiguration mAppBarConfiguration;
 
 
@@ -67,6 +68,40 @@ public class MainActivity extends AppCompatActivity {
             return s;
         }
     }
+
+    public static void makeNavBar(AppCompatActivity a) {
+        // Builds Top Bar Navigation
+        AppBarConfiguration mAppBarConfiguration;
+        DrawerLayout drawer = a.findViewById(R.id.drawer_layout);
+        NavigationView navigationView = a.findViewById(R.id.nav_view);
+        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow).setDrawerLayout(drawer).build();
+        NavController navController = Navigation.findNavController(a, R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController(a, navController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, navController);
+    }
+
+
+    public static boolean getIsDark() {
+        return isDark;
+    }
+
+    public static void checkMenu(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.sign_out) {
+            FirebaseAuth.getInstance().signOut();
+
+        } else if (id == R.id.dark_mode) {
+            if (getIsDark()) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
+            }
+            isDark = !isDark;
+        }
+    }
+
 
 
 
