@@ -1,9 +1,5 @@
 package com.example.chat_app;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.ui.AppBarConfiguration;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -14,6 +10,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -141,6 +140,7 @@ public class SignIn extends AppCompatActivity {
                             Toast.makeText(SignIn.this, "Success", Toast.LENGTH_LONG).show();
                             completeSignIn();
                             //Do Success Thing
+
                         } else {
                             Toast.makeText(SignIn.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                             System.out.println("Failure");
