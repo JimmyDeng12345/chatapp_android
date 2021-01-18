@@ -63,33 +63,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        FirebaseFirestore ff = FirebaseFirestore.getInstance();
-        System.out.println("yeeeeeee");
-        ff.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                System.out.println("Line 68");
-                if (error != null) {
-                    return;
-                }
-                System.out.println("Line 71");
-                for (QueryDocumentSnapshot qds : value) {
-                   User u = qds.toObject(User.class);
-                   System.out.println("userrrrrr " + u.email + " " + u.name + " " + u.photoURL);
-                }
-
-            }
-        });
 
         setContentView(R.layout.activity_main_page);
         RelativeLayout rl = findViewById(R.id.messages);
         rl.setVisibility(View.VISIBLE);
-        makeNavBar(this);
-
-        startActivity(new Intent(this, SignIn.class));
 
 
-        startActivity(new Intent(this, MainPage.class));
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        try {
+            mAuth.getCurrentUser().getEmail();
+            SignIn.signInCompleted = true;
+            startActivity(new Intent(this, MainPage.class));
+        } catch(NullPointerException e) {
+            startActivity(new Intent(this, SignIn.class));
+        }
+
 
 
     }

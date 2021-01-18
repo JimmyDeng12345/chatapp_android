@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -27,12 +28,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class SignIn extends AppCompatActivity {
 
     public static boolean createOn = true;
-
+    public static boolean signInCompleted = false;
     private GoogleSignInClient mGoogleSignInClient;
     public static FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
@@ -43,12 +48,7 @@ public class SignIn extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_account);
-        //FirebaseAuth.getInstance().signOut();
-        FirebaseUser currUser = mAuth.getCurrentUser();
-        if (currUser != null) {
-            finish();
-        }
-
+        System.out.println("running running");
         EditText name = findViewById(R.id.name);
         EditText email = findViewById(R.id.email);
         EditText password = findViewById(R.id.password);
@@ -59,6 +59,7 @@ public class SignIn extends AppCompatActivity {
         Button google = findViewById(R.id.googleSignIn);
         google.setBackgroundColor(Color.RED);
 
+        System.out.println("Line 62 Sign In");
         google.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -70,10 +71,11 @@ public class SignIn extends AppCompatActivity {
                 mGoogleSignInClient = GoogleSignIn.getClient(SignIn.this, gso);
                 Intent signInIntent = mGoogleSignInClient.getSignInIntent();
                 startActivityForResult(signInIntent, GOOGLE_SIGN_IN);
+                //addUserToDB();
             }
         });
 
-
+        System.out.println("Line 78 Sign In");
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,14 +84,15 @@ public class SignIn extends AppCompatActivity {
                 String userPassword = password.getText().toString();
                 if (createOn) {
                     mAuth.createUserWithEmailAndPassword(userEmail, userPassword);
-
                     updateProfile(name.getText().toString());
+                   // addUserToDB();
                 }
 
                 startSignIn(userEmail, userPassword);
             }
         });
 
+        System.out.println("Line 95 Sign In");
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,7 +119,33 @@ public class SignIn extends AppCompatActivity {
     }
 
     public void addUserToDB() {
+        FirebaseFirestore ff = FirebaseFirestore.getInstance();
+        System.out.println("yeeeeeee");
+        FirebaseUser user = mAuth.getCurrentUser();
+        Profile currentProfile = new Profile(user.getEmail(), user.getDisplayName(), "");
+        ff.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                System.out.println("Line 68");
+                if (error != null) {
+                    return;
+                }
+                System.out.println("Line 71");
+                for (QueryDocumentSnapshot qds : value) {
+                    Profile u = qds.toObject(Profile.class);
+                    if (profileEquals(u, currentProfile)) {
+                        return;
+                    }
+                }
+                ff.collection("users").add(currentProfile);
+            }
+        });
 
+
+    }
+
+    public static boolean profileEquals(Profile first, Profile second) {
+        return first.email.equals(second.email);
     }
 
     private void firebaseAuthWithGoogle(String idToken) {
@@ -160,7 +189,10 @@ public class SignIn extends AppCompatActivity {
 
 
     private void completeSignIn() {
+        signInCompleted = true;
+
         finish();
+        //startActivity(new Intent(this, MainPage.class));
         startActivity(new Intent(this, MainActivity.class));
     }
 
@@ -198,4 +230,6 @@ public class SignIn extends AppCompatActivity {
     public static void signOut() {
         mAuth.signOut();
     }
+
+    /*  */
 }

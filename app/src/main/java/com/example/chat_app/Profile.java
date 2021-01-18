@@ -15,6 +15,19 @@ public class Profile extends AppCompatActivity {
 
     private final int PICTURE_CODE = 1;
     private ImageView profilePicture;
+    String email, name, photoURL;
+
+    Profile(String email, String name, String photoURL) {
+        this.email = email;
+        this.name = name;
+        this.photoURL = photoURL;
+    }
+
+    Profile () {
+
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
