@@ -17,15 +17,6 @@ public class Profile extends AppCompatActivity {
     private ImageView profilePicture;
     String email, name, photoURL;
 
-    Profile(String email, String name, String photoURL) {
-        this.email = email;
-        this.name = name;
-        this.photoURL = photoURL;
-    }
-
-    Profile () {
-
-    }
 
 
     @Override
@@ -64,19 +55,5 @@ public class Profile extends AppCompatActivity {
                 profilePicture.setImageBitmap(photo);
             }
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        MainActivity.checkMenu(item);
-        return super.onOptionsItemSelected(item);
-
     }
 }

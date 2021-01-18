@@ -122,7 +122,7 @@ public class SignIn extends AppCompatActivity {
         FirebaseFirestore ff = FirebaseFirestore.getInstance();
         System.out.println("yeeeeeee");
         FirebaseUser user = mAuth.getCurrentUser();
-        Profile currentProfile = new Profile(user.getEmail(), user.getDisplayName(), "");
+        User currentProfile = new User(user.getEmail(), user.getDisplayName(), "");
         ff.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -132,7 +132,7 @@ public class SignIn extends AppCompatActivity {
                 }
                 System.out.println("Line 71");
                 for (QueryDocumentSnapshot qds : value) {
-                    Profile u = qds.toObject(Profile.class);
+                    User u = qds.toObject(User.class);
                     if (profileEquals(u, currentProfile)) {
                         return;
                     }
@@ -144,7 +144,7 @@ public class SignIn extends AppCompatActivity {
 
     }
 
-    public static boolean profileEquals(Profile first, Profile second) {
+    public static boolean profileEquals(User first, User second) {
         return first.email.equals(second.email);
     }
 
