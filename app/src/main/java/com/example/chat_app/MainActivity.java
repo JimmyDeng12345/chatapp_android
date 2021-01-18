@@ -15,10 +15,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,10 +34,20 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -49,12 +61,33 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        FirebaseFirestore ff = FirebaseFirestore.getInstance();
+        System.out.println("yeeeeeee");
+        ff.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                System.out.println("Line 68");
+                if (error != null) {
+                    return;
+                }
+                System.out.println("Line 71");
+                for (QueryDocumentSnapshot qds : value) {
+                   User u = qds.toObject(User.class);
+                   System.out.println("userrrrrr " + u.email + " " + u.name + " " + u.photoURL);
+                }
+
+            }
+        });
 
         setContentView(R.layout.activity_main_page);
-
+        RelativeLayout rl = findViewById(R.id.messages);
+        rl.setVisibility(View.VISIBLE);
+        makeNavBar(this);
 
         startActivity(new Intent(this, SignIn.class));
+
 
         startActivity(new Intent(this, MainPage.class));
 
@@ -70,14 +103,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void makeNavBar(AppCompatActivity a) {
-        // Builds Top Bar Navigation
-        AppBarConfiguration mAppBarConfiguration;
-        DrawerLayout drawer = a.findViewById(R.id.drawer_layout);
-        NavigationView navigationView = a.findViewById(R.id.nav_view);
-        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow).setDrawerLayout(drawer).build();
+        BottomNavigationView navView = a.findViewById(R.id.nav_view);
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
+                .build();
         NavController navController = Navigation.findNavController(a, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(a, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
+        NavigationUI.setupActionBarWithNavController(a, navController, appBarConfiguration);
+        NavigationUI.setupWithNavController(navView, navController);
     }
 
 

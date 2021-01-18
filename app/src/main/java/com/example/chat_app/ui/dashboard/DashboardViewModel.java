@@ -1,21 +1,16 @@
-package com.example.chat_app.ui.gallery;
-
-import android.app.Activity;
-import android.content.Intent;
+package com.example.chat_app.ui.dashboard;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.chat_app.Camera;
-
-public class GalleryViewModel extends ViewModel {
+public class DashboardViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public GalleryViewModel() {
-
-
+    public DashboardViewModel() {
+        mText = new MutableLiveData<>();
+        //mText.setValue("This is dashboard fragment");
     }
 
     public LiveData<String> getText() {

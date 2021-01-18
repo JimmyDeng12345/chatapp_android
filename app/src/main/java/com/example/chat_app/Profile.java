@@ -18,8 +18,7 @@ public class Profile extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_page);
-        MainActivity.makeNavBar(this);
+        setContentView(R.layout.activity_main_page);;
         setContentView(R.layout.activity_profile);
         profilePicture = findViewById(R.id.profilePicture);
         profilePicture.setImageBitmap(Camera.getCircularImage(BitmapFactory.decodeResource(this.getResources(), R.drawable.obama2)));
@@ -31,6 +30,17 @@ public class Profile extends AppCompatActivity {
         });
 
     }
+
+
+    public void setUpProfile(ImageView iv) {
+        iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Profile.this.startActivityForResult(new Intent(Profile.this, Camera.class), PICTURE_CODE);
+            }
+        });
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

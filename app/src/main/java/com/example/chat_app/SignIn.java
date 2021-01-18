@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SignIn extends AppCompatActivity {
 
@@ -34,13 +35,14 @@ public class SignIn extends AppCompatActivity {
 
     private GoogleSignInClient mGoogleSignInClient;
     public static FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+    public static FirebaseFirestore ff;
     private final int GOOGLE_SIGN_IN = 150;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_account);
-
         //FirebaseAuth.getInstance().signOut();
         FirebaseUser currUser = mAuth.getCurrentUser();
         if (currUser != null) {
@@ -60,6 +62,7 @@ public class SignIn extends AppCompatActivity {
         google.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestIdToken(getString(R.string.default_web_client_id))
                         .requestEmail()
@@ -110,6 +113,10 @@ public class SignIn extends AppCompatActivity {
     public static boolean changeState() {
         createOn = !createOn;
         return createOn;
+    }
+
+    public void addUserToDB() {
+
     }
 
     private void firebaseAuthWithGoogle(String idToken) {

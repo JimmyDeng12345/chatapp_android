@@ -30,9 +30,10 @@
                 android:background="@drawable/circle"
                 android:padding="3dp"
                 android:scaleType="centerInside"
-                android:src="@drawable/profile" />
+                android:src="@drawable/obama2" />
 
         </RelativeLayout>
+
 
         <TextView
             android:id="@+id/tv_name"

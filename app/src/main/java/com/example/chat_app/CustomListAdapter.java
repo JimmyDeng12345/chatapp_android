@@ -87,7 +87,7 @@ public class CustomListAdapter extends ArrayAdapter<Message> {
         holder.message.setText(title);
 
         //This block gives a null pointer exception when user is not signed in
-       if (uid.compareTo(MainActivity.getUID()) == 0) {
+  /*     if (uid.compareTo(MainActivity.getUID()) == 0) {
             Picasso.get().load(imgUrl).into(holder.my_image);
             holder.message.setGravity(Gravity.RIGHT);
             holder.my_image.setVisibility(View.VISIBLE);
@@ -97,7 +97,7 @@ public class CustomListAdapter extends ArrayAdapter<Message> {
             holder.message.setGravity(Gravity.LEFT);
             holder.image.setVisibility(View.VISIBLE);
             holder.my_image.setVisibility(View.INVISIBLE);
-        }
+        } */
 
 
         return convertView;

@@ -8,6 +8,9 @@
     <string name="action_sign_out">Sign Out</string>
     <string name="profile">My Profile</string>
     <string name="action_dark_mode">Toggle Dark/Light Mode</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 
 
     <string name="app_name">Chat_App</string>
