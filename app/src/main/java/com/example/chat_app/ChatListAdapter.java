@@ -5,18 +5,17 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class CustomListAdapter extends ArrayAdapter<Message> {
+public class ChatListAdapter extends ArrayAdapter<User> {
 
     private static final String TAG = "CustomListAdapter";
 
@@ -39,7 +38,7 @@ public class CustomListAdapter extends ArrayAdapter<Message> {
      * @param resource
      * @param objects
      */
-    public CustomListAdapter(Context context, int resource, ArrayList<Message> objects) {
+    public ChatListAdapter(Context context, int resource, ArrayList<User> objects) {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
@@ -50,9 +49,8 @@ public class CustomListAdapter extends ArrayAdapter<Message> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         //get the Card information
-        String title = getItem(position).text;
+        String title = getItem(position).name;
         String imgUrl = getItem(position).photoURL;
-        String uid = getItem(position).uid;
 
         //create the view result for showing the animation
         final View result;
@@ -67,7 +65,6 @@ public class CustomListAdapter extends ArrayAdapter<Message> {
             holder = new ViewHolder();
             holder.message = (TextView) convertView.findViewById(R.id.message);
             holder.image = (ImageView) convertView.findViewById(R.id.sender_photo);
-            holder.my_image = (ImageView) convertView.findViewById(R.id.my_photo);
 
             result = convertView;
 
@@ -86,27 +83,9 @@ public class CustomListAdapter extends ArrayAdapter<Message> {
 
         holder.message.setText(title);
 
-        if (uid == null) {
-            return convertView;
-        } else if (uid.compareTo(MainActivity.getUID()) == 0) {
-            Picasso.get().load(imgUrl).into(holder.my_image);
-            holder.message.setGravity(Gravity.RIGHT);
-            holder.my_image.setVisibility(View.VISIBLE);
-            holder.image.setVisibility(View.INVISIBLE);
-        } else {
-            Picasso.get().load(imgUrl).into(holder.image);
-            holder.message.setGravity(Gravity.LEFT);
-            holder.image.setVisibility(View.VISIBLE);
-            holder.my_image.setVisibility(View.INVISIBLE);
-        }
-
+        Picasso.get().load(imgUrl).into(holder.image);
 
         return convertView;
     }
-
-    /**
-     * Required for setting up the Universal Image loader Library
-     */
-
 
 }

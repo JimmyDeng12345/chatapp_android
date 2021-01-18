@@ -18,5 +18,6 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_sign_out">Sign Out</string>
+    <string name="profile_photo_1">https://i.imgflip.com/3read8.jpg</string>
 
 </resources>

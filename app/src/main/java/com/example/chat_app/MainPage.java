@@ -18,10 +18,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -46,132 +48,45 @@ import static android.content.ContentValues.TAG;
 
 
 public class MainPage extends AppCompatActivity {
-    private static FirebaseFirestore fdb;
 
-    private static TextView displayMessages;
-    private static EditText enterMessages;
-    private static Button sendMessage;
-    private static ImageView sender_photo;
-    private AppBarConfiguration mAppBarConfiguration;
-
-
-    public static ArrayList<Message> list;
-    private ListView mListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
         MainActivity.makeNavBar(this);
-        enterMessages = (EditText) findViewById(R.id.textbox);
-        sendMessage = (Button) findViewById(R.id.sendButton);
-        mListView = (ListView) findViewById(R.id.textdisplay);
-        list = new ArrayList<>();
 
-        setUp();
-    }
+        ListView lv = (ListView) findViewById(R.id.lv);
 
-    private void setUp() {
-        mListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-        mListView.setStackFromBottom(true);
+        ArrayList<User> user_list = new ArrayList<>();
+        user_list.add(new User("No Email", "Default Room", getString(R.string.profile_photo_1)));;
 
-        fdb = FirebaseFirestore.getInstance();
-
-        CustomListAdapter adapter = new CustomListAdapter(this, R.layout.message_display, list);
-        mListView.setAdapter(adapter);
+        ChatListAdapter adapter = new ChatListAdapter(this, R.layout.message_display, user_list);
+        lv.setAdapter(adapter);
 
         Context con = this;
 
-        sendMessage.setOnClickListener(new View.OnClickListener() {
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
-            public void onClick(View v) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //User item = parent.getItemAtPosition(position);
 
-                if (enterMessages.getText().toString().equals("Sign Out")) {
-                    FirebaseAuth.getInstance().signOut();
-                    startActivity(new Intent(con, MainActivity.class));
-                } else {
-                    sendMessage();
-                }
+                Intent intent = new Intent(con, ChatDisplay.class);
+                //based on item add info to intent
+                startActivity(intent);
             }
         });
 
-        fdb.collection("messages").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-
-                if (error != null) {
-                    Log.w(TAG, "Listen failed.", error);
-                    return;
-                }
-
-                list.clear();
-
-                for (QueryDocumentSnapshot doc : value) {
-                    list.add(doc.toObject(Message.class));
-                }
-                Collections.sort(list, new MessageComparator());
-                updateDisplay();
-            }
-        });
     }
 
-    public void updateDisplay() {
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-        CustomListAdapter adapter = new CustomListAdapter(this, R.layout.message_display, list);
-
-        mListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-        mListView.setAdapter(adapter);
-
+        //getMessagesOnDB();
     }
 
-    public void getMessagesOnDB() {
 
-        //MainActivity.displayMessages.append("Running" + '\n');
-        fdb.collection("messages")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                        if (task.isSuccessful()) {
-                            if (task.getResult() != null) {
-                                List<Message> readData = task.getResult().toObjects(Message.class);
-
-                                Object [] data = readData.toArray();
-                                Arrays.sort(data);
-
-                                for (int i = 0; i < data.length; i++) {
-                                    Object o = data[i];
-                                    processMessages((Message) o);
-                                }
-
-
-
-                            }
-                        } else {
-                            Log.w(TAG, "Goofed");
-                        }
-                    }
-                });
-    }
-
-    public void processMessages(Message m) {
-
-        list.add(m);
-        updateDisplay();
-
-    }
-
-    public void sendMessage() {
-
-        String text = enterMessages.getText().toString();
-        enterMessages.setText("");
-
-        String url = "https://www.borgenmagazine.com/wp-content/uploads/2013/09/george-bush-eating-corn.jpg";
-
-        fdb.collection("messages").add(new Message(new Date(), url, text, MainActivity.getUID()));
-
-    }
 
 
 

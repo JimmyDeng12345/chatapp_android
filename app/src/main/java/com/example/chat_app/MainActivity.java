@@ -1,53 +1,40 @@
 package com.example.chat_app;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Menu;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
 
-import java.util.List;
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -63,21 +50,35 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        FirebaseFirestore ff = FirebaseFirestore.getInstance();
+        System.out.println("yeeeeeee");
+        ff.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                System.out.println("Line 68");
+                if (error != null) {
+                    return;
+                }
+                System.out.println("Line 71");
+                for (QueryDocumentSnapshot qds : value) {
+                   User u = qds.toObject(User.class);
+                   System.out.println("userrrrrr " + u.email + " " + u.name + " " + u.photoURL);
+                }
+
+            }
+        });
 
         setContentView(R.layout.activity_main_page);
+
         RelativeLayout rl = findViewById(R.id.messages);
         rl.setVisibility(View.VISIBLE);
+        makeNavBar(this);
 
+//        setContentView(R.layout.activity_main);
 
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        try {
-            mAuth.getCurrentUser().getEmail();
-            SignIn.signInCompleted = true;
-            startActivity(new Intent(this, MainPage.class));
-        } catch(NullPointerException e) {
-            startActivity(new Intent(this, SignIn.class));
-        }
+        startActivity(new Intent(this, SignIn.class));
 
+        startActivity(new Intent(this, MainPage.class));
 
 
     }
@@ -107,19 +108,10 @@ public class MainActivity extends AppCompatActivity {
         return isDark;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public static void checkMenu(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.sign_out) {
             FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(this, SignIn.class));
 
         } else if (id == R.id.dark_mode) {
             if (getIsDark()) {
@@ -131,12 +123,101 @@ public class MainActivity extends AppCompatActivity {
             }
             isDark = !isDark;
         }
-        return super.onOptionsItemSelected(item);
     }
 
 
+    public static class CustomChatListAdapter extends ArrayAdapter<Message> {
+
+        private static final String TAG = "CustomListAdapter";
+
+        private Context mContext;
+        private int mResource;
+        private int lastPosition = -1;
+
+        /**
+         * Holds variables in a View
+         */
+        private static class ViewHolder {
+            TextView message;
+            ImageView image;
+            ImageView my_image;
+        }
+
+        /**
+         * Default constructor for the PersonListAdapter
+         * @param context
+         * @param resource
+         * @param objects
+         */
+        public CustomChatListAdapter(Context context, int resource, ArrayList<Message> objects) {
+            super(context, resource, objects);
+            mContext = context;
+            mResource = resource;
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            //get the Card information
+            String title = getItem(position).text;
+            String imgUrl = getItem(position).photoURL;
+            String uid = getItem(position).uid;
+
+            //create the view result for showing the animation
+            final View result;
+
+            //ViewHolder object
+            ViewHolder holder;
 
 
+            if(convertView == null){
+                LayoutInflater inflater = LayoutInflater.from(mContext);
+                convertView = inflater.inflate(mResource, parent, false);
+                holder = new ViewHolder();
+                holder.message = (TextView) convertView.findViewById(R.id.message);
+                holder.image = (ImageView) convertView.findViewById(R.id.sender_photo);
+                holder.my_image = (ImageView) convertView.findViewById(R.id.my_photo);
+
+                result = convertView;
+
+                convertView.setTag(holder);
+            }
+            else{
+                holder = (ViewHolder) convertView.getTag();
+                result = convertView;
+            }
 
 
+            //Animation animation = AnimationUtils.loadAnimation(mContext,
+            //        (position > lastPosition) ? R.anim.load_down_anim : R.anim.load_up_anim);
+            //result.startAnimation(animation);
+            lastPosition = position;
+
+            holder.message.setText(title);
+
+            if (uid == null) {
+                return convertView;
+            } else if (uid.compareTo(getUID()) == 0) {
+                Picasso.get().load(imgUrl).into(holder.my_image);
+                holder.message.setGravity(Gravity.RIGHT);
+                holder.my_image.setVisibility(View.VISIBLE);
+                holder.image.setVisibility(View.INVISIBLE);
+            } else {
+                Picasso.get().load(imgUrl).into(holder.image);
+                holder.message.setGravity(Gravity.LEFT);
+                holder.image.setVisibility(View.VISIBLE);
+                holder.my_image.setVisibility(View.INVISIBLE);
+            }
+
+
+            return convertView;
+        }
+
+        /**
+         * Required for setting up the Universal Image loader Library
+         */
+
+
+    }
 }
