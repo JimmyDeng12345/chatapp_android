@@ -107,10 +107,19 @@ public class MainActivity extends AppCompatActivity {
         return isDark;
     }
 
-    public static void checkMenu(MenuItem item) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.sign_out) {
             FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(this, SignIn.class));
 
         } else if (id == R.id.dark_mode) {
             if (getIsDark()) {
@@ -122,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
             }
             isDark = !isDark;
         }
+        return super.onOptionsItemSelected(item);
     }
 
 
