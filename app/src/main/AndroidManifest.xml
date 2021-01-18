@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Chat_App">
-        <activity android:name=".Profile"></activity>
+        <activity android:name=".ChatDisplay"></activity>
+        <activity android:name=".Profile" />
         <activity android:name=".SignIn" />
         <activity android:name=".Camera" />
         <activity android:name=".MainPage" />

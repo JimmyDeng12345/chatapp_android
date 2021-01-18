@@ -161,7 +161,7 @@ public class SignIn extends AppCompatActivity {
 
     private void completeSignIn() {
         finish();
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, MainPage.class));
     }
 
 
