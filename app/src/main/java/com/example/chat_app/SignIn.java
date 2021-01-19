@@ -33,6 +33,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firestore.v1.WriteResult;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignIn extends AppCompatActivity {
 
@@ -71,7 +76,6 @@ public class SignIn extends AppCompatActivity {
                 mGoogleSignInClient = GoogleSignIn.getClient(SignIn.this, gso);
                 Intent signInIntent = mGoogleSignInClient.getSignInIntent();
                 startActivityForResult(signInIntent, GOOGLE_SIGN_IN);
-                //addUserToDB();
             }
         });
 
@@ -85,7 +89,7 @@ public class SignIn extends AppCompatActivity {
                 if (createOn) {
                     mAuth.createUserWithEmailAndPassword(userEmail, userPassword);
                     updateProfile(name.getText().toString());
-                   // addUserToDB();
+
                 }
 
                 startSignIn(userEmail, userPassword);
@@ -137,7 +141,12 @@ public class SignIn extends AppCompatActivity {
                         return;
                     }
                 }
-                ff.collection("users").add(currentProfile);
+                Map<String, Object> docData = new HashMap<>();
+                docData.put("email", currentProfile.email);
+                docData.put("name", currentProfile.name);
+                docData.put("photoURL", currentProfile.photoURL);
+// Add a new document (asynchronously) in collection "cities" with id "LA"
+                ff.collection("users").document(user.getUid().toString()).set(docData);
             }
         });
 
@@ -189,6 +198,7 @@ public class SignIn extends AppCompatActivity {
 
 
     private void completeSignIn() {
+        addUserToDB();
         signInCompleted = true;
 
         finish();

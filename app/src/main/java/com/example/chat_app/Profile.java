@@ -15,8 +15,6 @@ public class Profile extends AppCompatActivity {
 
     private final int PICTURE_CODE = 1;
     private ImageView profilePicture;
-    String email, name, photoURL;
-
 
 
     @Override
