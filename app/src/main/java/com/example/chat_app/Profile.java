@@ -2,6 +2,8 @@ package com.example.chat_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,34 +17,23 @@ public class Profile extends AppCompatActivity {
 
     private final int PICTURE_CODE = 1;
     private ImageView profilePicture;
-    String email, name, photoURL;
-
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_page);;
+        setContentView(R.layout.activity_main_page);
         setContentView(R.layout.activity_profile);
-        profilePicture = findViewById(R.id.profilePicture);
-        profilePicture.setImageBitmap(Camera.getCircularImage(BitmapFactory.decodeResource(this.getResources(), R.drawable.obama2)));
-        profilePicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivityForResult(new Intent(Profile.this, Camera.class), PICTURE_CODE);
-            }
-        });
+
 
     }
 
 
-    public void setUpProfile(ImageView iv) {
-        iv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Profile.this.startActivityForResult(new Intent(Profile.this, Camera.class), PICTURE_CODE);
-            }
-        });
+    public void setUpProfile(ImageView profilePicture, View v) {
+        this.profilePicture = profilePicture;
+        profilePicture = v.findViewById(R.id.profilePicture);
+        profilePicture.setImageBitmap(Camera.getCircularImage(BitmapFactory.decodeResource(v.getResources(), R.drawable.obama2)));
+
     }
 
 
@@ -55,5 +46,6 @@ public class Profile extends AppCompatActivity {
                 profilePicture.setImageBitmap(photo);
             }
         }
+        finish();
     }
 }

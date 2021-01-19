@@ -11,6 +11,14 @@ public class User {
     }
 
     public User() {
-
+        this.email = "";
+        this.name = "Barack Obama";
+        this.photoURL = "";
     }
+
+    public boolean isEqualTo(User other) {
+        return this.email == other.email && this.name == other.name;
+    }
+
+
 }
