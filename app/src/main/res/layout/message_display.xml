@@ -24,7 +24,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <ImageView
+            <com.pkmmte.view.CircularImageView
                 android:layout_width="50dp"
                 android:id="@+id/sender_photo"
                 android:layout_alignParentTop="true"
@@ -33,7 +33,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_height="50dp"/>
 
-            <ImageView
+            <com.pkmmte.view.CircularImageView
                 android:layout_width="50dp"
                 android:id="@+id/my_photo"
                 android:layout_alignParentTop="true"

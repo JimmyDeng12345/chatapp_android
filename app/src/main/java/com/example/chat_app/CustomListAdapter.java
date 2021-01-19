@@ -1,17 +1,21 @@
 package com.example.chat_app;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.Transformation;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -45,6 +49,7 @@ public class CustomListAdapter extends ArrayAdapter<Message> {
         mResource = resource;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {

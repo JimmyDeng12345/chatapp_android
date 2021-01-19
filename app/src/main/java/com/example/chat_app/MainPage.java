@@ -33,6 +33,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -44,6 +47,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static android.content.ContentValues.TAG;
 
@@ -51,6 +55,9 @@ import static android.content.ContentValues.TAG;
 
 public class MainPage extends AppCompatActivity {
 
+    FirebaseFirestore fdb;
+    ArrayList<User> otherUsers;
+    TextView tempTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +65,62 @@ public class MainPage extends AppCompatActivity {
         setContentView(R.layout.activity_main_page);
         MainActivity.makeNavBar(this);
 
+        fdb = FirebaseFirestore.getInstance();
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        otherUsers = new ArrayList<>();
+        ArrayList<String> al = new ArrayList<>();
+
+        fdb.collection("users").document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                if (task.getResult() != null) {
+                    try {
+                        ArrayList<String> temp = (ArrayList<String>) task.getResult().get("conversations");
+                        func(temp, 0);
+
+                    } catch (Exception e) {}
+                }
+            }
+        });
+
+    }
+
+    private void func(ArrayList<String> temp, int pos) {
+
+        if (pos == temp.size() || temp.size() == 0) {
+            otherFunction();
+            return;
+        }
+
+        fdb.collection("users").document(temp.get(pos)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                if (task.getResult() != null) {
+                    try {
+                        Map<String, Object> name = task.getResult().getData();
+                        otherUsers.add(new User((String) name.get("email"), (String) name.get("name"), (String) name.get("photoURL")));
+                        func(temp, pos + 1);
+
+                    } catch (Exception e) {
+
+                    }
+                }
+
+
+            }
+        });
+    }
+
+    private void otherFunction() {
+
         ListView lv = (ListView) findViewById(R.id.lv);
 
-        ArrayList<User> user_list = new ArrayList<>();
-        user_list.add(new User("No Email", "Default Room", getString(R.string.profile_photo_1)));;
+        otherUsers.add(new User("No Email", "Default Room", "https://media-exp1.licdn.com/dms/image/C5603AQEtPW8yKmS2PA/profile-displayphoto-shrink_800_800/0/1610343703620?e=1616630400&v=beta&t=X9_nDlsS_CRiyMPp38ySKjfxX-k57g3teAxhhp7z2yg"));;
 
-        ChatListAdapter adapter = new ChatListAdapter(this, R.layout.message_display, user_list);
+        ChatListAdapter adapter = new ChatListAdapter(this, R.layout.message_display, otherUsers);
         lv.setAdapter(adapter);
 
         Context con = this;
@@ -78,7 +135,6 @@ public class MainPage extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
     }
 
     @Override

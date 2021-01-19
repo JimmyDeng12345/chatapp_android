@@ -7,12 +7,13 @@ import java.util.Date;
 public class Message implements Comparable {
 
     public Date createdAt;
-    public String photoURL, text, uid;
+    public String photoURL, text, uid, sendTo;
 
     public Message() {
         createdAt = new Date(0);
         photoURL = "";
         text = "";
+        sendTo = "";
     }
 
     public Message(Date createdAt, String photoURL, String text, String uid) {
@@ -21,6 +22,17 @@ public class Message implements Comparable {
         this.photoURL = photoURL;
         this.text = text;
         this.uid = uid;
+        sendTo = "";
+
+    }
+
+    public Message(Date createdAt, String photoURL, String text, String uid, String sendTo) {
+
+        this.createdAt = createdAt;
+        this.photoURL = photoURL;
+        this.text = text;
+        this.uid = uid;
+        this.sendTo = sendTo;
 
     }
 

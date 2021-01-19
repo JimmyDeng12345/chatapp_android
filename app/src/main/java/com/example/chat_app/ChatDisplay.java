@@ -145,8 +145,10 @@ public class ChatDisplay extends AppCompatActivity {
         enterMessages.setText("");
 
         String url = "https://www.borgenmagazine.com/wp-content/uploads/2013/09/george-bush-eating-corn.jpg";
+        String url1 = "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/b87d2841-ca20-4e28-819f-ac43f7bfe8ea/de4ezgs-274b3117-50ed-4073-9c8f-4ac1d9cc67dd.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3sicGF0aCI6IlwvZlwvYjg3ZDI4NDEtY2EyMC00ZTI4LTgxOWYtYWM0M2Y3YmZlOGVhXC9kZTRlemdzLTI3NGIzMTE3LTUwZWQtNDA3My05YzhmLTRhYzFkOWNjNjdkZC5qcGcifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.v3QBzdLRI8ZT4R5JiYQPFxIxTIHEu7qMDa8N_DBMDn0";
 
-        fdb.collection("messages").add(new Message(new Date(), url, text, MainActivity.getUID()));
+
+        fdb.collection("messages").add(new Message(new Date(), url1, text, MainActivity.getUID()));
 
     }
 }
