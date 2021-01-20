@@ -123,27 +123,19 @@ public class MainPage extends AppCompatActivity {
         ChatListAdapter adapter = new ChatListAdapter(this, R.layout.message_display, otherUsers);
         lv.setAdapter(adapter);
 
-        Context con = this;
+        //Context con = this;
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //User item = parent.getItemAtPosition(position);
 
-                Intent intent = new Intent(con, ChatDisplay.class);
+                Intent intent = new Intent(getApplicationContext(), ChatDisplay.class);
                 //based on item add info to intent
                 startActivity(intent);
             }
         });
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        //getMessagesOnDB();
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
