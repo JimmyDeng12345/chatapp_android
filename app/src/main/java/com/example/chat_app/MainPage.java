@@ -83,6 +83,7 @@ public class MainPage extends AppCompatActivity {
                     } catch (Exception e) {}
                 }
             }
+            
         });
 
     }
