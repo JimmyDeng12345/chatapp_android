@@ -19,7 +19,9 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -67,6 +69,13 @@ public class ChatDisplay extends AppCompatActivity {
 
         Context con = this;
 
+        String myUid = FirebaseAuth.getInstance().getUid();
+
+        Bundle extras = getIntent().getExtras();
+
+        String otherUid = extras.getString("otherUid");
+        String otherURL = extras.getString("photoURL");
+
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,29 +84,84 @@ public class ChatDisplay extends AppCompatActivity {
                     FirebaseAuth.getInstance().signOut();
                     startActivity(new Intent(con, MainActivity.class));
                 } else {
-                    sendMessage();
+                    if (otherUid.length() == 0) {
+                        sendMessage();
+                    } else {
+                        sendMessage(myUid, otherUid);
+                    }
                 }
             }
         });
 
-        fdb.collection("messages").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+        if (otherUid.length() != 0) {
 
-                if (error != null) {
-                    Log.w(TAG, "Listen failed.", error);
-                    return;
+
+            fdb.collection("new_messages/rooms/" + myUid + "," + otherUid).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                    if (error != null) {
+                        return;
+                    }
+
+                    //Do not know how we are storing personal photo, temp for now
+                    String tempURL = "https://www.biography.com/.image/ar_1:1%2Cc_fill%2Ccs_srgb%2Cg_face%2Cq_auto:good%2Cw_300/MTc2Njk4NDEwOTMyMzgxNjc1/margaret-thatcher_500x500_gettyimages-108932085.jpg";
+
+                    for (QueryDocumentSnapshot doc : value) {
+                        Message temp = doc.toObject(Message.class);
+                        temp.photoURL = tempURL;
+                        temp.uid = myUid;
+                        list.add(temp);
+                    }
+
+                    Collections.sort(list, new MessageComparator());
+                    updateDisplay();
+
                 }
+            });
 
-                list.clear();
+            fdb.collection("new_messages/rooms/" + otherUid + "," + myUid).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
 
-                for (QueryDocumentSnapshot doc : value) {
-                    list.add(doc.toObject(Message.class));
+                    if (error != null) {
+                        return;
+                    }
+
+                    for (QueryDocumentSnapshot doc : value) {
+                        Message temp = doc.toObject(Message.class);
+                        temp.photoURL = otherURL;
+                        temp.uid = otherUid;
+                        list.add(temp);
+                    }
+
+                    Collections.sort(list, new MessageComparator());
+                    updateDisplay();
+
                 }
-                Collections.sort(list, new MessageComparator());
-                updateDisplay();
-            }
-        });
+            });
+
+        } else {
+
+            fdb.collection("messages").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                    if (error != null) {
+                        Log.w(TAG, "Listen failed.", error);
+                        return;
+                    }
+
+                    list.clear();
+
+                    for (QueryDocumentSnapshot doc : value) {
+                        list.add(doc.toObject(Message.class));
+                    }
+                    Collections.sort(list, new MessageComparator());
+                    updateDisplay();
+                }
+            });
+        }
     }
 
     public void updateDisplay() {
@@ -148,7 +212,18 @@ public class ChatDisplay extends AppCompatActivity {
         String url1 = "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/b87d2841-ca20-4e28-819f-ac43f7bfe8ea/de4ezgs-274b3117-50ed-4073-9c8f-4ac1d9cc67dd.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3sicGF0aCI6IlwvZlwvYjg3ZDI4NDEtY2EyMC00ZTI4LTgxOWYtYWM0M2Y3YmZlOGVhXC9kZTRlemdzLTI3NGIzMTE3LTUwZWQtNDA3My05YzhmLTRhYzFkOWNjNjdkZC5qcGcifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.v3QBzdLRI8ZT4R5JiYQPFxIxTIHEu7qMDa8N_DBMDn0";
 
 
-        fdb.collection("messages").add(new Message(new Date(), url1, text, MainActivity.getUID()));
+        fdb.collection("messages").add(new Message(new Date(), text, url1, MainActivity.getUID()));
+
+    }
+
+    public void sendMessage(String myUID, String otherUID) {
+        String text = enterMessages.getText().toString();
+        enterMessages.setText("");
+
+        //Temp personal profile photo, where is it being stored?
+        String tempURL = "https://www.biography.com/.image/ar_1:1%2Cc_fill%2Ccs_srgb%2Cg_face%2Cq_auto:good%2Cw_300/MTc2Njk4NDEwOTMyMzgxNjc1/margaret-thatcher_500x500_gettyimages-108932085.jpg";
+
+        fdb.collection("new_messages/" + myUID + "," + otherUID + "/rooms").add(new Message(new Date(), text, tempURL, myUID));
 
     }
 }

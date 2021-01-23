@@ -16,6 +16,12 @@ public class User {
         this.photoURL = "";
     }
 
+    public User(String email, String name, String photoURL, String uid) {
+        this.photoURL = photoURL;
+        this.email = uid;
+        this.name = name;
+    }
+
     public boolean isEqualTo(User other) {
         return this.email == other.email && this.name == other.name;
     }

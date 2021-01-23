@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,11 +60,17 @@ public class MainPage extends AppCompatActivity {
     ArrayList<User> otherUsers;
     TextView tempTV;
 
+    ListView lv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
         MainActivity.makeNavBar(this);
+
+        lv = (ListView) findViewById(R.id.lv);
+
+        tempTV = findViewById(R.id.tv_temp);
 
         fdb = FirebaseFirestore.getInstance();
 
@@ -71,71 +78,83 @@ public class MainPage extends AppCompatActivity {
         otherUsers = new ArrayList<>();
         ArrayList<String> al = new ArrayList<>();
 
-        fdb.collection("users").document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        fdb.collection("users").document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-
-                if (task.getResult() != null) {
-                    try {
-                        ArrayList<String> temp = (ArrayList<String>) task.getResult().get("conversations");
-                        func(temp, 0);
-
-                    } catch (Exception e) {}
-                }
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                tempTV.setText("");
+               // tempTV.append(value.getData().toString());
             }
-            
         });
+
+        fdb.collection("users/" + uid + "/strangers").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                if (error != null) {
+                    Log.w(TAG, "Listen failed.", error);
+                    return;
+                }
+
+                for (QueryDocumentSnapshot doc : value) {
+                    //tempTV.append(doc.toObject(StringWrapper.class).toString());
+                    func(doc.toObject(StringWrapper.class).toString());
+                }
+
+            }
+        });
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(getApplicationContext(), ChatDisplay.class);
+                i.putExtra("otherUid", otherUsers.get(position).email);
+                i.putExtra("photoURL", otherUsers.get(position).photoURL);
+                startActivity(i);
+            }
+        });
+
+        otherFunction();
 
     }
 
-    private void func(ArrayList<String> temp, int pos) {
+    private void func(String s) {
 
-        if (pos == temp.size() || temp.size() == 0) {
-            otherFunction();
-            return;
-        }
+//        if (pos == temp.size() || temp.size() == 0) {
+//            otherFunction();
+//            return;
+//        }
 
-        fdb.collection("users").document(temp.get(pos)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        fdb.collection("users").document(s).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
                 if (task.getResult() != null) {
                     try {
                         Map<String, Object> name = task.getResult().getData();
-                        otherUsers.add(new User((String) name.get("email"), (String) name.get("name"), (String) name.get("photoURL")));
-                        func(temp, pos + 1);
+                        otherUsers.add(new User((String) name.get("email"), (String) name.get("name"), (String) name.get("photoURL"), s));
+                      //  func(temp, pos + 1);
+                        update();
 
                     } catch (Exception e) {
-
+                        throw e;
                     }
                 }
-
-
             }
         });
     }
 
-    private void otherFunction() {
-
-        ListView lv = (ListView) findViewById(R.id.lv);
-
-        otherUsers.add(new User("No Email", "Default Room", "https://media-exp1.licdn.com/dms/image/C5603AQEtPW8yKmS2PA/profile-displayphoto-shrink_800_800/0/1610343703620?e=1616630400&v=beta&t=X9_nDlsS_CRiyMPp38ySKjfxX-k57g3teAxhhp7z2yg"));;
+    private void update() {
 
         ChatListAdapter adapter = new ChatListAdapter(this, R.layout.message_display, otherUsers);
         lv.setAdapter(adapter);
+    }
 
-        //Context con = this;
+    private void otherFunction() {
 
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //User item = parent.getItemAtPosition(position);
+        otherUsers.add(new User("", "Default Room", "https://media-exp1.licdn.com/dms/image/C5603AQEtPW8yKmS2PA/profile-displayphoto-shrink_800_800/0/1610343703620?e=1616630400&v=beta&t=X9_nDlsS_CRiyMPp38ySKjfxX-k57g3teAxhhp7z2yg"));;
 
-                Intent intent = new Intent(getApplicationContext(), ChatDisplay.class);
-                //based on item add info to intent
-                startActivity(intent);
-            }
-        });
+        update();
+
     }
 
     @Override

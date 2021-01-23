@@ -16,23 +16,21 @@ public class Message implements Comparable {
         sendTo = "";
     }
 
-    public Message(Date createdAt, String photoURL, String text, String uid) {
+    public Message(Date createdAt, String text, String photoURL) {
+        this.createdAt = createdAt;
+        this.text = text;
+        uid = "";
+        sendTo = "";
+        this.photoURL = photoURL;
+    }
+
+    public Message(Date createdAt, String text, String photoURL, String uid) {
 
         this.createdAt = createdAt;
         this.photoURL = photoURL;
         this.text = text;
         this.uid = uid;
         sendTo = "";
-
-    }
-
-    public Message(Date createdAt, String photoURL, String text, String uid, String sendTo) {
-
-        this.createdAt = createdAt;
-        this.photoURL = photoURL;
-        this.text = text;
-        this.uid = uid;
-        this.sendTo = sendTo;
 
     }
 
