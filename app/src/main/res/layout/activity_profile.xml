@@ -60,16 +60,6 @@
             android:textColor="@color/address"
             android:textSize="14sp" />
 
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="15dp"
-            android:adjustViewBounds="true"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_settings" />
-
     </RelativeLayout>
 
     <LinearLayout
@@ -84,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:background="@color/followersBg"
+            android:background="@color/gradEnd"
             android:gravity="center"
             android:paddingBottom="5dp"
             android:paddingTop="5dp">
@@ -107,7 +97,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
-                    android:text="followers"
+                    android:text="Chats Found"
                     android:textAllCaps="true"
                     android:textColor="@color/white"
                     android:textSize="13sp" />
@@ -121,7 +111,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:background="@color/followingBg"
+            android:background="@color/gradStart"
             android:gravity="center"
             android:paddingBottom="5dp"
             android:paddingTop="5dp">
@@ -136,7 +126,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
-                    android:text="873"
+                    android:text=""
                     android:textColor="@color/white"
                     android:textSize="25sp" />
 
@@ -144,7 +134,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
-                    android:text="following"
+                    android:text="Account Made"
                     android:textAllCaps="true"
                     android:textColor="@color/white"
                     android:textSize="13sp" />

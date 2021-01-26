@@ -15,12 +15,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.chat_app.ui.dashboard.DashboardFragment;
+import com.example.chat_app.ui.profile.ProfileFragment;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -28,9 +32,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firestore.v1.WriteResult;
@@ -39,10 +46,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.chat_app.ui.dashboard.DashboardFragment.FIELD_NAME;
+
 public class SignIn extends AppCompatActivity {
 
     public static boolean createOn = true;
     public static boolean signInCompleted = false;
+    public static boolean accountMade = false;
     private GoogleSignInClient mGoogleSignInClient;
     public static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private EditText name;
@@ -93,8 +103,10 @@ public class SignIn extends AppCompatActivity {
                 } else {
                     if (createOn) {
                         mAuth.createUserWithEmailAndPassword(userEmail, userPassword);
+                        startSignIn(userEmail, userPassword, true);
+                    } else {
+                        startSignIn(userEmail, userPassword, false);
                     }
-                    startSignIn(userEmail, userPassword);
                 }
             }
         });
@@ -113,7 +125,7 @@ public class SignIn extends AppCompatActivity {
                     create.setText("Sign In");
                     bottomText.setText("Need An Account?");
                     name.setVisibility(View.GONE);
-                    signIn.setText("Create An Account");
+                    signIn.setText("Create Account");
                 }
             }
         });
@@ -126,6 +138,10 @@ public class SignIn extends AppCompatActivity {
     }
 
     public void addUserToDB() {
+        if (SignIn.accountMade) {
+            return;
+        }
+        System.out.println("adding line 139");
         FirebaseUser user = mAuth.getCurrentUser();
         User currentProfile = new User(user.getEmail(), user.getDisplayName(), "");
         Map<String, Object> docData = new HashMap<>();
@@ -134,27 +150,23 @@ public class SignIn extends AppCompatActivity {
         if (display == null || display.equals("")) {
             display = name.getText().toString();
         }
-        System.out.println("User add");
         docData.put("name", display);
         docData.put("photoURL", currentProfile.photoURL);
-        ff.collection("users").document(user.getUid()).set(docData);
-      /*  ff.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null) {
-                    return;
-                }
-                for (QueryDocumentSnapshot qds : value) {
-                    User u = qds.toObject(User.class);
-                    if (currentProfile.isEqualTo(u)) {
-                        return;
+        ff.collection("users").orderBy("index", Query.Direction.DESCENDING).limit(1).get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            System.out.println("User add");
+
+                            String total = document.getData().get("index").toString();
+                            int asNum = Integer.parseInt(total) + 1;
+                            docData.put("index", asNum + "");
+                            ff.collection("users").document(user.getUid()).set(docData);
+                        }
                     }
-                }
-
-            }
-        });
-*/
-
+                });
     }
 
 
@@ -166,7 +178,7 @@ public class SignIn extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            completeSignIn();
+                            completeSignIn(true);
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(SignIn.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
@@ -176,7 +188,7 @@ public class SignIn extends AppCompatActivity {
                 });
     }
 
-    private void startSignIn(String email, String password) {
+    private void startSignIn(String email, String password, boolean addUser) {
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -184,7 +196,7 @@ public class SignIn extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(SignIn.this, "Success", Toast.LENGTH_LONG).show();
-                            completeSignIn();
+                            completeSignIn(addUser);
                             //Do Success Thing
 
                         } else {
@@ -198,12 +210,15 @@ public class SignIn extends AppCompatActivity {
 
 
 
-    private void completeSignIn() {
-        addUserToDB();
+    private void completeSignIn(boolean addUser) {
+        if (addUser) {
+            addUserToDB();
+        }
+        System.out.println((addUser && !SignIn.accountMade) + "yeeeeeeees");
         signInCompleted = true;
         finish();
         //startActivity(new Intent(this, MainPage.class));
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, MainPage.class));
     }
 
 

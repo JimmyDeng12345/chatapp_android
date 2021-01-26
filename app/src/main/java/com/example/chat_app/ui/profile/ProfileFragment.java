@@ -32,6 +32,7 @@ import java.util.Map;
 public class ProfileFragment extends Fragment {
 
     private ProfileViewModel notificationsViewModel;
+    public static int myIndex = -1;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -54,7 +55,9 @@ public class ProfileFragment extends Fragment {
                     Map<String, Object> data = value.getData();
                     displayName.setText(data.get("name").toString());
                     email.setText(data.get("email").toString());
-                }            }
+                    myIndex = Integer.parseInt(data.get("index").toString());
+                }
+            }
         });
 
         Profile curr = new Profile();

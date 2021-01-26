@@ -15,8 +15,8 @@
     <color name="headings">#3797CF</color>
     <color name="solidCircle">#AAFFFFFF</color>
     <color name="circleBorder">#50FFFFFF</color>
-    <color name="gradEnd">#67EFC8</color>
-    <color name="gradStart">#63C9FF</color>
+    <color name="gradEnd">#C8C7DC</color>
+    <color name="gradStart">#5E58AD</color>
     <color name="followersBg">#65DCE5</color>
     <color name="followingBg">#49BEFF</color>
     <color name="grey">#E5E5E5</color>
