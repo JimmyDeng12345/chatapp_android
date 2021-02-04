@@ -24,6 +24,7 @@ import com.example.chat_app.SignIn;
 import com.example.chat_app.ui.profile.ProfileFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -32,6 +33,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.example.chat_app.SignIn.ff;
@@ -65,17 +67,23 @@ public class DashboardFragment extends Fragment {
                                     int randIndex = (int) (Math.random() * total);
                                     if (randIndex == ProfileFragment.myIndex && ProfileFragment.myIndex != -1) {
                                         randIndex = (int) (Math.random() * total);
-
                                     }
+                                    randIndex = 11;
                                     ff.collection("users")
                                             .whereEqualTo("index", randIndex + "").limit(1).get()
                                             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-
                                                 @Override
                                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                     for (QueryDocumentSnapshot document : task.getResult()) {
                                                         Map<String, Object> ye = document.getData();
                                                         displayResult.setText(ye.get("name").toString());
+                                                        String myUid = FirebaseAuth.getInstance().getUid();
+                                                        Map<String, Object> theirStrangers = (Map<String, Object>) ye.get("strangers");
+                                                        theirStrangers.put(myUid, myUid);
+                                                        Map<String, Object> updated = (Map<String, Object>) ye.get("strangers");
+                                                        updated.put(document.getId(), document.getId());
+                                                        addUserToStrangers(myUid, document.getId());
+                                                        //addUserToStrangers(document.getId(), myUid);
                                                         return;
                                                     }
                                                 }
@@ -89,7 +97,21 @@ public class DashboardFragment extends Fragment {
         //ib.setImageBitmap(Camera.getCircularImage(BitmapFactory.decodeResource(root.getResources(), R.drawable.circle_button)));
         RelativeLayout relativeLayout = getActivity().findViewById(R.id.messages);
         relativeLayout.setVisibility(View.INVISIBLE);
-
         return root;
     }
+    //0yDPbfsTHqh4QpuNq1vpii2Qr3H2
+    public static void addUserToStrangers (String addTo, String from) {
+
+        ff.collection("users").document(addTo)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                        Map<String, Object> data = value.getData();
+                        Map<String, Object> updated = (Map<String, Object>) data.get("strangers");
+                        updated.put(from, from);
+
+                    }
+                });
+    }
+
 }

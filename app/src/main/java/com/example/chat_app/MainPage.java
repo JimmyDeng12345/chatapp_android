@@ -123,6 +123,9 @@ public class MainPage extends AppCompatActivity {
 //            otherFunction();
 //            return;
 //        }
+        if (s == null) {
+            return;
+        }
 
         fdb.collection("users").document(s).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -136,7 +139,7 @@ public class MainPage extends AppCompatActivity {
                         update();
 
                     } catch (Exception e) {
-                        throw e;
+                        //throw e;
                     }
                 }
             }

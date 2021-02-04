@@ -152,6 +152,11 @@ public class SignIn extends AppCompatActivity {
         }
         docData.put("name", display);
         docData.put("photoURL", currentProfile.photoURL);
+
+        Map<String, Object> sample = new HashMap<>();
+        sample.put("sample", "sample");
+
+
         ff.collection("users").orderBy("index", Query.Direction.DESCENDING).limit(1).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 
@@ -162,11 +167,18 @@ public class SignIn extends AppCompatActivity {
 
                             String total = document.getData().get("index").toString();
                             int asNum = Integer.parseInt(total) + 1;
-                            docData.put("index", asNum + "");
+                            //docData.put("strangers", sample);
+                            docData.put("index", asNum);
+                            docData.put("strangers", sample);
                             ff.collection("users").document(user.getUid()).set(docData);
+
+
+
                         }
                     }
                 });
+
+        //ff.collection("users").document(user.getUid()).collection("strangers").document("sample").set(sample);
     }
 
 
@@ -214,6 +226,7 @@ public class SignIn extends AppCompatActivity {
         if (addUser) {
             addUserToDB();
         }
+        addUserToDB();
         System.out.println((addUser && !SignIn.accountMade) + "yeeeeeeees");
         signInCompleted = true;
         finish();

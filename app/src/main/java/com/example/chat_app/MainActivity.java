@@ -31,6 +31,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -39,6 +41,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -59,10 +63,15 @@ public class MainActivity extends AppCompatActivity {
 
         RelativeLayout rl = findViewById(R.id.messages);
         rl.setVisibility(View.VISIBLE);
+        //FirebaseAuth.getInstance().signOut();
 
+        Map<String, Object> sample = new HashMap<>();
+        sample.put("sample", "sample");
         FirebaseUser me = FirebaseAuth.getInstance().getCurrentUser();
+        //startActivity(new Intent(this, SignIn.class));
         if (me == null) {
            startActivity(new Intent(this, SignIn.class));
+
         } else {
            startActivity(new Intent(this, MainPage.class));
         }
