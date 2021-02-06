@@ -57,11 +57,13 @@ public class DashboardFragment extends Fragment {
         ib.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                System.out.println("yeeeeeeeeennnnnner0");
                 ff.collection("users").orderBy("index", Query.Direction.DESCENDING).limit(1).get()
                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                System.out.println("yeeeeeeeeennnnnner1");
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     int total = Integer.parseInt(document.getData().get(FIELD_NAME).toString());
                                     int randIndex = (int) (Math.random() * total);
@@ -70,21 +72,21 @@ public class DashboardFragment extends Fragment {
                                     }
                                     randIndex = 11;
                                     ff.collection("users")
-                                            .whereEqualTo("index", randIndex + "").limit(1).get()
+                                            .whereEqualTo("index", randIndex).limit(1).get()
                                             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
                                                     for (QueryDocumentSnapshot document : task.getResult()) {
                                                         Map<String, Object> ye = document.getData();
                                                         displayResult.setText(ye.get("name").toString());
                                                         String myUid = FirebaseAuth.getInstance().getUid();
-                                                        Map<String, Object> theirStrangers = (Map<String, Object>) ye.get("strangers");
-                                                        theirStrangers.put(myUid, myUid);
                                                         Map<String, Object> updated = (Map<String, Object>) ye.get("strangers");
-                                                        updated.put(document.getId(), document.getId());
+                                                        //ye.remove("strangers");
+                                                        updated.put(myUid, myUid);
+                                                        ye.put("strangers", updated);
                                                         addUserToStrangers(myUid, document.getId());
-                                                        //addUserToStrangers(document.getId(), myUid);
-                                                        return;
+                                                        ff.collection("users").document(document.getId()).set(ye);
                                                     }
                                                 }
                                             });
@@ -109,7 +111,7 @@ public class DashboardFragment extends Fragment {
                         Map<String, Object> data = value.getData();
                         Map<String, Object> updated = (Map<String, Object>) data.get("strangers");
                         updated.put(from, from);
-
+                        ff.collection("users").document(addTo).set(data);
                     }
                 });
     }

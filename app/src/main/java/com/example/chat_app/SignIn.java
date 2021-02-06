@@ -154,7 +154,7 @@ public class SignIn extends AppCompatActivity {
         docData.put("photoURL", currentProfile.photoURL);
 
         Map<String, Object> sample = new HashMap<>();
-        sample.put("sample", "sample");
+       // sample.put("sample", "sample");
 
 
         ff.collection("users").orderBy("index", Query.Direction.DESCENDING).limit(1).get()
@@ -226,7 +226,7 @@ public class SignIn extends AppCompatActivity {
         if (addUser) {
             addUserToDB();
         }
-        addUserToDB();
+        //addUserToDB();
         System.out.println((addUser && !SignIn.accountMade) + "yeeeeeeees");
         signInCompleted = true;
         finish();
