@@ -70,7 +70,7 @@ public class DashboardFragment extends Fragment {
                                     if (randIndex == ProfileFragment.myIndex && ProfileFragment.myIndex != -1) {
                                         randIndex = (int) (Math.random() * total);
                                     }
-                                    randIndex = 11;
+                                    //randIndex = 14;
                                     ff.collection("users")
                                             .whereEqualTo("index", randIndex).limit(1).get()
                                             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -82,6 +82,9 @@ public class DashboardFragment extends Fragment {
                                                         displayResult.setText(ye.get("name").toString());
                                                         String myUid = FirebaseAuth.getInstance().getUid();
                                                         Map<String, Object> updated = (Map<String, Object>) ye.get("strangers");
+                                                        if (updated == null) {
+                                                            updated = new HashMap<>();
+                                                        }
                                                         //ye.remove("strangers");
                                                         updated.put(myUid, myUid);
                                                         ye.put("strangers", updated);

@@ -190,7 +190,7 @@ public class SignIn extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            completeSignIn(true);
+                            completeSignIn(false);
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(SignIn.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
@@ -223,6 +223,15 @@ public class SignIn extends AppCompatActivity {
 
 
     private void completeSignIn(boolean addUser) {
+        ff.collection("users").whereEqualTo("email", FirebaseAuth.getInstance().getCurrentUser().getEmail()).limit(1)
+        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.getResult() == null) {
+                    addUserToDB();
+                }
+            }
+        });
         if (addUser) {
             addUserToDB();
         }
