@@ -47,7 +47,7 @@
                 android:layout_toLeftOf="@+id/my_photo"
                 android:layout_toEndOf="@+id/sender_photo"
                 android:layout_toRightOf="@+id/sender_photo"
-                android:gravity="center"
+                android:gravity="left"
                 android:text="TextView"
                 android:textSize="24sp" />
 

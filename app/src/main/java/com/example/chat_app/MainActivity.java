@@ -51,15 +51,12 @@ public class MainActivity extends AppCompatActivity {
     public static boolean isDark = false;
     private AppBarConfiguration mAppBarConfiguration;
 
-
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
-
 
         RelativeLayout rl = findViewById(R.id.messages);
         rl.setVisibility(View.VISIBLE);
